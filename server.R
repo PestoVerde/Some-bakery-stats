@@ -1,5 +1,5 @@
 #Attaching libraries
-libs <- c("shiny", "reshape2")
+libs <- c("shiny", "reshape2", "plotly", "ggplot2")
 
 sapply(libs, library, character.only = T, logical.return = T, 
        quietly = T, warn.conflicts = F)
@@ -39,13 +39,15 @@ shinyServer(function(input, output){
         to.show
     })
     
-    output$bakeryHistogramm <- renderPlot(
+    output$bakeryHistogramm <- renderPlot({
         # Render a histograms
-        hist(dataset(),
-             main = input$SelectedColumn,
-             ylab = "Number of entries",
-             xlab = "Value")
-    )
+        #hist(dataset(),
+        #     main = input$SelectedColumn,
+        #     ylab = "Number of entries",
+        #     xlab = "Value")
+        p <- qplot(dataset(), geom="histogram")
+        print(p)
+    })
     
     output$info_test <- renderText({
         #print(input$SelectedColumn)
