@@ -50,7 +50,8 @@ shinyUI(navbarPage("Snapshot profile",
                             ), # sidebarPanel
                             
                             mainPanel(
-                                tabPanel("Histogram", plotOutput("bakeryHistogramm"))
+                                plotlyOutput("trendPlot")
+                                #tabPanel("Histogram", plotOutput("bakeryHistogramm"))
                                 #,verbatimTextOutput("info_test")
                             )# mainPanel
                    ),#tabPanel("Plots")

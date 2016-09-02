@@ -40,13 +40,27 @@ shinyServer(function(input, output){
     })
     
     output$bakeryHistogramm <- renderPlot({
-        # Render a histograms
+        # Render a histograms standard
         #hist(dataset(),
         #     main = input$SelectedColumn,
         #     ylab = "Number of entries",
         #     xlab = "Value")
-        p <- qplot(dataset(), geom="histogram")
-        print(p)
+        # Render a histograms ggplot
+        #p <- qplot(dataset(), geom="histogram")
+        #print(p)
+    })
+    
+    # Render a histograms plotly
+    output$trendPlot <- renderPlotly({
+
+        gg <- qplot(dataset(), 
+                    geom="histogram",
+                    main = input$SelectedColumn, 
+                    xlab = "Value",
+                    ylab = "Number of entries")
+        # Convert the ggplot to a plotly
+        p <- ggplotly(gg)
+        p
     })
     
     output$info_test <- renderText({
