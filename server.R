@@ -7,6 +7,31 @@ sapply(libs, library, character.only = T, logical.return = T,
 #Increasing upload size
 options(shiny.maxRequestSize=30*1024^2)
 
+ss.bins <- function(x){
+    
+    N <- 2: 100
+    C <- numeric(length(N))
+    D <- C
+    
+    for (i in 1:length(N)) {
+        D[i] <- diff(range(x))/N[i]
+        
+        edges = seq(min(x),max(x),length=N[i])
+        hp <- hist(x, breaks = edges, plot=FALSE )
+        ki <- hp$counts
+        
+        k <- mean(ki)
+        v <- sum((ki-k)^2)/N[i]
+        
+        C[i] <- (2*k-v)/D[i]^2	#Cost Function
+    }
+    
+    idx <- which.min(C)
+    n = N[idx]
+    
+    return(n)
+}
+
 #Loading data
 #load("test_data.RData")
 
@@ -30,7 +55,7 @@ shinyServer(function(input, output){
     
     output$ColumnSelector <- renderUI({
         selectInput("SelectedColumn","Select a column", 
-                    choices = names(datafile())[-c(1:6, 38:39)])
+                    choices = names(datafile()))
     })
     
     dataset <- reactive({
@@ -50,11 +75,26 @@ shinyServer(function(input, output){
         #print(p)
     })
     
+    #Reactive rules for histogramm
+    bins<- reactive({
+        n <- switch(input$rule,
+                    excel = floor(sqrt(length(dataset()))),
+                    sturges = floor(log2(length(dataset()))+1),
+                    scott = floor(diff(range(dataset()))/(3.5*sd(dataset())/length(dataset())^(1/3))),
+                    fd = floor(diff(range(dataset()))/(2*IQR(dataset())/(length(dataset())^(1/3)))),
+                    ss = ss.bins(dataset()))
+        
+        
+    })
+    
     # Render a histograms plotly
     output$trendPlot <- renderPlotly({
+        
+        
 
         gg <- qplot(dataset(), 
-                    geom="histogram",
+                    geom = "histogram",
+                    bins = bins(),
                     main = input$SelectedColumn, 
                     xlab = "Value",
                     ylab = "Number of entries")
@@ -68,6 +108,10 @@ shinyServer(function(input, output){
         if (is.null(datafile())){print("Choose file to upload")} else
         {print(paste("Uploaded", dim(datafile())[1], "rows and", 
                      dim(datafile())[2], "columns"))}
+    })
+    
+    output$bins_text <- renderText({
+        paste("Histogram has", bins(), "bins")
     })
     
     output$info1 <- renderText({
@@ -107,4 +151,3 @@ shinyServer(function(input, output){
     })
     
 })#shinyServer
-

@@ -28,23 +28,31 @@ shinyUI(navbarPage("Snapshot profile",
                             dataTableOutput("contents")
                    ),#tabPanel(Data Set)
                    
-                   tabPanel("Info",
-                            verbatimTextOutput("info1"),
-                            verbatimTextOutput("info2"),
-                            verbatimTextOutput("info3"),
-                            helpText('Columns with many zeroes (%% are shown):'),
-                            verbatimTextOutput('info5')
-                   ),#tabPanel(Info)
+#                   tabPanel("Info",
+#                            verbatimTextOutput("info1"),
+#                            verbatimTextOutput("info2"),
+#                            verbatimTextOutput("info3"),
+#                            helpText('Columns with many zeroes (%% are shown):'),
+#                           verbatimTextOutput('info5')
+#                   ),#tabPanel(Info)
                    
-                   tabPanel("Corelations",
-                            helpText('Corelated pairs (coefficients are shown):'),
-                            verbatimTextOutput('corr')
-                   ),#tabPanel(Corelations)
+ #                  tabPanel("Corelations",
+ #                           helpText('Corelated pairs (coefficients are shown):'),
+ #                           verbatimTextOutput('corr')
+ #                  ),#tabPanel(Corelations)
                    
                    tabPanel("Plots",
                             titlePanel("Histograms"),
                             sidebarPanel(
                                 uiOutput("ColumnSelector"),
+                                hr(),
+                                radioButtons("rule", "Rule for bins number:",
+                                             c("Excel" = "excel",
+                                               "Sturges" = "sturges",
+                                               "Scott" = "scott",
+                                               "Freedman–Diaconis" = "fd",
+                                               "Shimazaki-Shinomoto" = "ss"),
+                                             "fd"),
                                 hr(),
                                 helpText("Parameters of my bakery")
                             ), # sidebarPanel
@@ -53,6 +61,7 @@ shinyUI(navbarPage("Snapshot profile",
                                 plotlyOutput("trendPlot")
                                 #tabPanel("Histogram", plotOutput("bakeryHistogramm"))
                                 #,verbatimTextOutput("info_test")
+                                , verbatimTextOutput("bins_text")
                             )# mainPanel
                    ),#tabPanel("Plots")
                    
